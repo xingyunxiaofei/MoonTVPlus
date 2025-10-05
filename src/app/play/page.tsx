@@ -493,23 +493,42 @@ function PlayPageClient() {
     }
   };
 
-  // 去广告相关函数
-  function filterAdsFromM3U8(m3u8Content: string): string {
+  function filterAdsFromM3U8(type : string,m3u8Content: string): string {
     if (!m3u8Content) return '';
 
     // 按行分割M3U8内容
     const lines = m3u8Content.split('\n');
     const filteredLines = [];
 
+    let nextdelete = false
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
+        if (nextdelete){
+          nextdelete = false
+          continue
+        }
+
       // 只过滤#EXT-X-DISCONTINUITY标识
       if (!line.includes('#EXT-X-DISCONTINUITY')) {
+
+        if (type == "ruyi" && (
+            line.includes('EXTINF:5.640000') ||
+            line.includes('EXTINF:2.960000') ||
+            line.includes('EXTINF:3.480000') ||
+            line.includes('EXTINF:4.000000') ||
+            line.includes('EXTINF:0.960000') ||
+            line.includes('EXTINF:10.000000') ||
+            line.includes('EXTINF:1.266667')
+        )){
+          nextdelete = true
+          continue
+        }
+
         filteredLines.push(line);
       }
     }
-
+   
     return filteredLines.join('\n');
   }
 
@@ -634,7 +653,7 @@ function PlayPageClient() {
             // 如果是m3u8文件，处理内容以移除广告分段
             if (response.data && typeof response.data === 'string') {
               // 过滤掉广告段 - 实现更精确的广告过滤逻辑
-              response.data = filterAdsFromM3U8(response.data);
+              response.data = filterAdsFromM3U8(currentSourceRef.current,response.data);
             }
             return onSuccess(response, stats, context, null);
           };
