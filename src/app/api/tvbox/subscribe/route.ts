@@ -124,6 +124,7 @@ export async function GET(request: NextRequest) {
             return {
               name: live.name,
               type: 0,
+              playerType: 1,
               url: live.url,
               epg: live.epg || '',
               logo: '',

@@ -36,14 +36,6 @@ export async function GET(request: NextRequest) {
       const operatorInfo = await db.getUserInfoV2(authInfo.username);
       if (operatorInfo) {
         operatorRole = operatorInfo.role;
-      } else {
-        // 回退到配置中查找
-        const userEntry = adminConfig.UserConfig.Users.find(
-          (u) => u.username === authInfo.username
-        );
-        if (userEntry) {
-          operatorRole = userEntry.role;
-        }
       }
     }
 
